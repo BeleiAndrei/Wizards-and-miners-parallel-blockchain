@@ -1,0 +1,21 @@
+I. ComunicationChannel
+	In implementarea mea am definit in clasa CommunicationChannel:
+	-2 LinkedBlockingQueue pentru coada de mesaje ce urmeaza sa fie preluate de
+catre miner sau wizard.
+	-1 ConcurrentHashMap in care se adauga camerele care au fost trimise deja
+in coada de mesaje pentru mineri. Acest hashmap este folosit pentru a verifica
+existenta duplicatelor in mesajele trimise de catre vrajitori. Inainte de a
+trimite un mesaj cu informatiile camerei ce urmeaza sa fie minat verifica
+existenta acesteia in hashmap. Daca nu s-a gasit o adauga in hashmap si apoi
+trimite mesajul.
+	-1 Hashmap in care cheia este id-ul vrajitorului si valoare lista de mesaje
+pe care vrajitorul a trimis-o pana la mesajul "END". La trimiterea mesajului
+"END" mesajele trimise de vrajitor sunt extrase din coada doua cate doua pana
+cand lista este goala. Fiecare pereche de mesaje: camera-parinte/camera-copil
+vor fii verificate cu ajutorul ConcurrentHashMap-ului de mai sus si apoi
+trimise sub forma unui singur mesaj.
+II. Miner
+	Deoarece toate problemele de concurenta si parsare a mesajelor au fost
+rezolvate in CommunicationChannel, minerii doar vor verifica daca vrajitorii au
+mesaje, mineaza mesajul, apoi trimit raspunsul inapoi la vrajitor prin
+intermediul canalului de comunicatie.

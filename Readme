@@ -1,0 +1,63 @@
+Objectives
+	The goal of the miners is to explore all the tunnels in their cave system.
+The cave system has many rooms, each with its puzzle to solve. The miners can solve the puzzles and with
+the solutions, the wizards can break the magic barriers protecting the cave and gain access to the adjacent
+rooms.
+	The Wizards are not always available, as sometimes they sleep. When a wizard is awake, he takes puzzle
+solutions from the miners, and does wizardly things to unlock the paths to all adjacent rooms.  If the puzzles
+are solved incorrectly, when the wizard tries to unlock the paths, a great explosion kills everyone, ends the
+program.
+	To solve a puzzle the miner starts calculating the hash of the hash of the hash
+of ...  of the hash of the string. The number of times to repeat the hash operation is fixed and equal to N.
+The miners start outside of the cave, and they know in which room to go by getting this information from
+the wizards. When this happens, the wizards also tell the miners what the string that needs to be hashed is.
+
+The cave system
+	The cave system contains many rooms. There are multiple cave entrances and all of them can be accessed at
+the start. There is no guarantee that any room can be reached from any other room using the cave system.
+However, there is a guarantee that all rooms can be reached if all entrances are used.
+Each room is protected by magic that needs to be taken down by the wizard. Once a room is unlocked, the
+adjacent, undiscovered rooms are revealed.
+
+	When the wizard is awake, he takes a puzzle solution along with the name of the current room as well as
+the name of the previous room, and unlocks the current room.  An incorrectly solved puzzle will trigger the
+explosion. Once a barrier is down the wizard gives the list of adjacent rooms to the miners, so they can start
+work on the next puzzles.
+
+The communication channel
+	The  miners  and  the  wizards  communicate  using  a  communication  channel.   For  every  puzzle  solved,  the
+miners  give  the  wizards  the  following  information  in  a  single  message:  the  room  name,  the  name  of  the
+previous room (the parent room) and the solution of the puzzle.
+	For  every  puzzle  solution,  the  wizards  give  the  miners  the  list  of  rooms  adjacent  to  the  room  in  which
+the puzzle was solved.  It the wizards get an incorrect solution or incorrect previous room, an explosion is
+triggered.
+	When there are no more rooms, the wizards put EXIT messages in the communication channel, one for each
+miner.  They also trigger the end of the program.
+
+
+run: java Homework <caveInfoPath> <numberOfHashes> <numberOfWizards> <numberOfMiners>
+generate graph in "generator" folder: python generate_graph.py -f <fileName> -s <numberOfNodes> -e <numberOfEdges>
+sequentially generate solution to graph in "solver" folder: java Main <test_case> <number_of_hashes> <output_case>
+
+I. ComunicationChannel
+	In implementarea mea am definit in clasa CommunicationChannel:
+	-2 LinkedBlockingQueue pentru coada de mesaje ce urmeaza sa fie preluate de
+catre miner sau wizard.
+	-1 ConcurrentHashMap in care se adauga camerele care au fost trimise deja
+in coada de mesaje pentru mineri. Acest hashmap este folosit pentru a verifica
+existenta duplicatelor in mesajele trimise de catre vrajitori. Inainte de a
+trimite un mesaj cu informatiile camerei ce urmeaza sa fie minat verifica
+existenta acesteia in hashmap. Daca nu s-a gasit o adauga in hashmap si apoi
+trimite mesajul.
+	-1 Hashmap in care cheia este id-ul vrajitorului si valoare lista de mesaje
+pe care vrajitorul a trimis-o pana la mesajul "END". La trimiterea mesajului
+"END" mesajele trimise de vrajitor sunt extrase din coada doua cate doua pana
+cand lista este goala. Fiecare pereche de mesaje: camera-parinte/camera-copil
+vor fii verificate cu ajutorul ConcurrentHashMap-ului de mai sus si apoi
+trimise sub forma unui singur mesaj.
+II. Miner
+	Deoarece toate problemele de concurenta si parsare a mesajelor au fost
+rezolvate in CommunicationChannel, minerii doar vor verifica daca vrajitorii au
+mesaje, mineaza mesajul, apoi trimit raspunsul inapoi la vrajitor prin
+intermediul canalului de comunicatie.
+
